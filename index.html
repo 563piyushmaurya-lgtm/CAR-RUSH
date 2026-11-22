@@ -1,0 +1,300 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <meta name="theme-color" content="#070912" />
+    <meta name="description" content="CAR RUSH - a 3D endless highway racer. Dodge traffic, collect coins, unlock cars." />
+    <title>CAR RUSH - Endless Highway Racer</title>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23070912'/%3E%3Cpath d='M10 40l4-9q3-2 9-3l7-7q3-2 9-2h6q6 1 9 6l3 6v9z' fill='%2300e5ff'/%3E%3Ccircle cx='21' cy='42' r='6' fill='%23ff3d8b'/%3E%3Ccircle cx='45' cy='42' r='6' fill='%23ff3d8b'/%3E%3C/svg%3E" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet" />
+  </head>
+  <body>
+    <!-- Three.js draws the 3D world here -->
+    <canvas id="game-canvas"></canvas>
+
+    <!-- Screen effects -->
+    <div id="vignette"></div>
+    <div id="flash"></div>
+
+    <!-- Everything below is HTML UI layered on top of the 3D canvas -->
+    <div id="ui">
+      <!-- ============ LOADER ============ -->
+      <div id="loader">
+        <div class="loader-logo">CAR<span>RUSH</span></div>
+        <div class="loader-bar"><i></i></div>
+        <p class="loader-text">Warming up the engine...</p>
+      </div>
+
+      <!-- ============ MAIN MENU ============ -->
+      <section class="screen screen-menu" data-screen="menu">
+        <div class="topbar">
+          <div class="pill coin-pill"><span class="coin-icon"></span><b data-bind="coins">0</b></div>
+          <button class="icon-btn" data-action="toggle-sound" aria-label="Toggle sound">
+            <svg class="icon-sound-on" viewBox="0 0 24 24"><path d="M4 9v6h4l5 4V5L8 9H4zm12.5 3a4.5 4.5 0 0 0-2.5-4v8a4.5 4.5 0 0 0 2.5-4zM14 3.2v2.1a7 7 0 0 1 0 13.4v2.1a9 9 0 0 0 0-17.6z"/></svg>
+            <svg class="icon-sound-off" viewBox="0 0 24 24"><path d="M4 9v6h4l5 4V5L8 9H4zm16.6 3 2.1-2.1-1.4-1.4-2.1 2.1-2.1-2.1-1.4 1.4 2.1 2.1-2.1 2.1 1.4 1.4 2.1-2.1 2.1 2.1 1.4-1.4z"/></svg>
+          </button>
+        </div>
+
+        <div class="menu-center">
+          <div class="logo-wrap">
+            <div class="logo"><span class="logo-car">CAR</span><span class="logo-rush">RUSH</span></div>
+            <div class="logo-streaks"><i></i><i></i><i></i></div>
+            <p class="tagline">ENDLESS HIGHWAY RACER</p>
+          </div>
+
+          <div class="menu-info glass">
+            <div class="info-item">
+              <span class="label">BEST SCORE</span>
+              <b class="info-value" data-bind="best">0</b>
+            </div>
+            <div class="info-divider"></div>
+            <div class="info-item">
+              <span class="label">YOUR RIDE</span>
+              <b class="info-value car-name" data-bind="car">-</b>
+            </div>
+          </div>
+
+          <button class="btn btn-primary btn-play" data-action="play">
+            <svg viewBox="0 0 24 24" width="22" height="22"><path fill="currentColor" d="M8 5v14l11-7z"/></svg>
+            PLAY
+          </button>
+          <div class="menu-row">
+            <button class="btn btn-glass" data-action="garage">
+              <svg viewBox="0 0 24 24" width="18" height="18"><path fill="currentColor" d="M5 11l1.5-4.5h11L19 11H5zm12.5 5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm-11 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zM18.9 6A1.5 1.5 0 0 0 17.5 5h-11c-.66 0-1.21.42-1.42 1.01L3 12v8a1 1 0 0 0 1 1h1a1 1 0 0 0 1-1v-1h12v1a1 1 0 0 0 1 1h1a1 1 0 0 0 1-1v-8l-2.1-6z"/></svg>
+              GARAGE
+            </button>
+            <button class="btn btn-glass" data-action="shop">
+              <svg viewBox="0 0 24 24" width="18" height="18"><path fill="currentColor" d="M7 18a2 2 0 1 0 0 4 2 2 0 0 0 0-4zM1 2v2h2l3.6 7.59-1.35 2.45A2 2 0 0 0 7 17h12v-2H7.42a.25.25 0 0 1-.25-.25l.03-.12.9-1.63h7.45a2 2 0 0 0 1.75-1.03l3.58-6.49A1 1 0 0 0 20 4H5.21l-.94-2H1zm16 16a2 2 0 1 0 0 4 2 2 0 0 0 0-4z"/></svg>
+              SHOP
+            </button>
+          </div>
+          <div class="settings-row glass" data-controls>
+            <div class="seg" role="group" aria-label="Time of day">
+              <button data-action="day-mode" data-mode="day">&#9728;&#65039; DAY</button>
+              <button data-action="day-mode" data-mode="night">&#127769; NIGHT</button>
+              <button data-action="day-mode" data-mode="auto">&#128260; AUTO</button>
+            </div>
+            <button class="chip" data-action="weather"><span data-bind="weather-icon"></span> <span data-bind="weather-label">AUTO</span></button>
+          </div>
+        </div>
+
+        <aside class="missions-panel glass">
+          <h4>MISSIONS</h4>
+          <ul class="missions-list" id="missions-list"></ul>
+        </aside>
+
+        <p class="controls-hint desktop-only">
+          <kbd>&larr;</kbd><kbd>&rarr;</kbd> lanes &middot; <kbd>&darr;</kbd> brake &middot; <kbd>SHIFT</kbd> nitro &middot; <kbd>L</kbd> headlights &middot; <kbd>H</kbd> horn &middot; <kbd>C</kbd> camera &middot; <kbd>SPACE</kbd> pause
+        </p>
+        <p class="controls-hint touch-only">Swipe to change lanes &middot; hold BRAKE / NITRO buttons</p>
+      </section>
+
+      <!-- ============ GARAGE ============ -->
+      <section class="screen screen-garage" data-screen="garage">
+        <header class="screen-header">
+          <button class="btn btn-glass btn-back" data-action="menu">
+            <svg viewBox="0 0 24 24" width="18" height="18"><path fill="currentColor" d="M15.4 7.4 14 6l-6 6 6 6 1.4-1.4L10.8 12z"/></svg>
+            BACK
+          </button>
+          <h2 class="screen-title">GARAGE</h2>
+          <div class="pill coin-pill"><span class="coin-icon"></span><b data-bind="coins">0</b></div>
+        </header>
+
+        <div class="garage-stage">
+          <button class="nav-arrow" data-action="garage-prev" aria-label="Previous car">
+            <svg viewBox="0 0 24 24"><path fill="currentColor" d="M15.4 7.4 14 6l-6 6 6 6 1.4-1.4L10.8 12z"/></svg>
+          </button>
+          <button class="nav-arrow" data-action="garage-next" aria-label="Next car">
+            <svg viewBox="0 0 24 24"><path fill="currentColor" d="M8.6 16.6 10 18l6-6-6-6-1.4 1.4 4.6 4.6z"/></svg>
+          </button>
+        </div>
+
+        <aside class="garage-panel glass" id="garage-panel">
+          <div class="car-head">
+            <div>
+              <span class="car-brand" id="g-brand"></span>
+              <h3 class="car-model" id="g-model"></h3>
+            </div>
+            <div class="car-head-right">
+              <span class="status-badge" id="g-status"></span>
+              <span class="car-counter" id="g-counter"></span>
+            </div>
+          </div>
+          <p class="car-tagline" id="g-tagline"></p>
+          <div class="stats" id="g-stats"></div>
+
+          <div class="paint-head">
+            <h4>PAINT</h4>
+            <span id="g-paint-name"></span>
+          </div>
+          <div class="swatches" id="g-swatches"></div>
+          <p class="paint-note" id="g-paint-note"></p>
+
+          <button class="btn btn-primary btn-wide" id="g-action" data-action="garage-action">SELECT CAR</button>
+          <div class="garage-dots" id="g-dots"></div>
+        </aside>
+      </section>
+
+      <!-- ============ SHOP ============ -->
+      <section class="screen screen-shop" data-screen="shop">
+        <header class="screen-header">
+          <button class="btn btn-glass btn-back" data-action="menu">
+            <svg viewBox="0 0 24 24" width="18" height="18"><path fill="currentColor" d="M15.4 7.4 14 6l-6 6 6 6 1.4-1.4L10.8 12z"/></svg>
+            BACK
+          </button>
+          <h2 class="screen-title">CAR SHOP</h2>
+          <div class="pill coin-pill"><span class="coin-icon"></span><b data-bind="coins">0</b></div>
+        </header>
+        <p class="shop-sub">Collect coins on the highway and unlock legendary rides.</p>
+        <div class="shop-scroll" id="shop-scroll">
+          <div class="shop-grid" id="shop-grid"></div>
+        </div>
+      </section>
+
+      <!-- ============ HUD (in-game) ============ -->
+      <section class="screen hud" id="hud">
+        <div class="hud-top">
+          <div class="hud-left">
+            <div class="hud-score glass">
+              <span class="label">SCORE</span>
+              <b id="hud-score">0</b>
+              <span class="hud-distance"><b id="hud-distance">0</b> m &middot; <span id="hud-zone">COUNTRYSIDE</span></span>
+            </div>
+            <div class="hp-bar glass" title="Car health">
+              <span>HP</span>
+              <div class="bar"><i id="hud-hp"></i></div>
+            </div>
+          </div>
+
+          <div class="dock glass" data-controls>
+            <div class="seg" role="group" aria-label="Time of day">
+              <button data-action="day-mode" data-mode="day" title="Day">&#9728;&#65039;<span> DAY</span></button>
+              <button data-action="day-mode" data-mode="night" title="Night">&#127769;<span> NIGHT</span></button>
+              <button data-action="day-mode" data-mode="auto" title="Auto cycle">&#128260;<span> AUTO</span></button>
+            </div>
+            <button class="chip" data-action="weather" title="Weather (tap to change)"><span data-bind="weather-icon"></span><span class="chip-text" data-bind="weather-label"></span></button>
+            <button class="chip headlight-btn" data-action="headlights" title="Headlights (L)">
+              <span class="hl-icon">&#128161;</span>
+              <span class="chip-text">HEADLIGHT: <b data-bind="headlight-state">OFF</b></span>
+              <span class="hl-cta" data-bind="headlight-cta">TURN ON</span>
+            </button>
+            <button class="chip" data-action="camera" title="Camera (C)">&#127909;<span class="chip-text" data-bind="camera-label">CHASE</span></button>
+            <span class="clock" data-bind="clock">12:00</span>
+          </div>
+
+          <div class="hud-right">
+            <div class="pill coin-pill" id="hud-coins-pill"><span class="coin-icon"></span><b id="hud-coins">0</b></div>
+            <button class="icon-btn" data-action="pause" aria-label="Pause">
+              <svg viewBox="0 0 24 24"><path d="M6 5h4v14H6zM14 5h4v14h-4z"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="police-banner" id="police-banner">
+          <span class="siren"></span>
+          <b>POLICE CHASE</b>
+          <span>Stay above <b id="police-speed">130</b> km/h &middot; <b id="police-time">30</b>s</span>
+          <div class="bar"><i id="police-close"></i></div>
+        </div>
+
+        <div class="near-miss" id="near-miss"></div>
+
+        <div class="hud-bottom">
+          <div class="gauge glass">
+            <div class="limit-sign" id="hud-limit" title="Speed limit">100</div>
+            <div class="speed-readout">
+              <b id="hud-speed">0</b><span>KM/H</span>
+              <em id="hud-gear">G1</em>
+            </div>
+            <div class="speed-track"><i id="hud-speed-bar"></i></div>
+            <div class="meters">
+              <div class="meter nitro"><span>NITRO</span><div class="bar"><i id="hud-nitro"></i></div></div>
+              <div class="meter fuel"><span>FUEL</span><div class="bar"><i id="hud-fuel"></i></div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="touch-controls">
+          <button class="touch-btn brake" data-hold="brake">BRAKE</button>
+          <button class="touch-btn horn" data-action="horn">&#128227;</button>
+          <button class="touch-btn nitro" data-hold="nitro">NITRO</button>
+        </div>
+
+        <div class="swipe-hint" id="swipe-hint">&larr; SWIPE TO STEER &rarr;</div>
+      </section>
+
+      <!-- cockpit view: dashboard overlay + rain on the windscreen -->
+      <div id="cockpit">
+        <div class="pillar left"></div>
+        <div class="pillar right"></div>
+        <div class="dash"><div class="wheel"></div></div>
+      </div>
+      <div id="windshield-rain"></div>
+      <div id="cracks"></div>
+      <!-- ============ PAUSE ============ -->
+      <section class="screen screen-modal" data-screen="pause">
+        <div class="modal glass">
+          <h2 class="modal-title">PAUSED</h2>
+          <button class="btn btn-primary btn-wide" data-action="resume">RESUME</button>
+          <button class="btn btn-glass btn-wide" data-action="restart">RESTART</button>
+          <button class="btn btn-glass btn-wide" data-action="menu">MAIN MENU</button>
+          <div class="pause-settings" data-controls>
+            <div class="seg" role="group" aria-label="Time of day">
+              <button data-action="day-mode" data-mode="day">&#9728;&#65039; DAY</button>
+              <button data-action="day-mode" data-mode="night">&#127769; NIGHT</button>
+              <button data-action="day-mode" data-mode="auto">&#128260; AUTO</button>
+            </div>
+            <div class="pause-chips">
+              <button class="chip" data-action="weather"><span data-bind="weather-icon"></span> <span data-bind="weather-label"></span></button>
+              <button class="chip" data-action="headlights">&#128161; <b data-bind="headlight-state">OFF</b></button>
+              <button class="chip" data-action="camera">&#127909; <span data-bind="camera-label"></span></button>
+            </div>
+          </div>
+          <button class="btn btn-ghost" data-action="toggle-sound">
+            <span class="sound-label-on">SOUND: ON</span><span class="sound-label-off">SOUND: OFF</span>
+          </button>
+        </div>
+      </section>
+
+      <!-- ============ GAME OVER ============ -->
+      <section class="screen screen-modal" data-screen="gameover">
+        <div class="modal glass gameover">
+          <p class="crash-label" id="go-reason">CRASHED!</p>
+          <h2 class="modal-title">GAME OVER</h2>
+          <div class="final-score">
+            <span class="label">FINAL SCORE</span>
+            <b id="go-score">0</b>
+            <span class="new-best" id="go-newbest">NEW BEST!</span>
+          </div>
+          <div class="go-stats">
+            <div><span class="label">DISTANCE</span><b id="go-distance">0 m</b></div>
+            <div><span class="label">COINS</span><b class="gold" id="go-coins">0</b></div>
+            <div><span class="label">BEST</span><b id="go-best">0</b></div>
+            <div><span class="label">NEAR MISSES</span><b id="go-nearmiss">0</b></div>
+            <div><span class="label">TOP SPEED</span><b id="go-topspeed">0</b></div>
+            <div><span class="label">CAR</span><b id="go-car">-</b></div>
+          </div>
+          <p class="go-wallet">Wallet <span class="coin-icon"></span><b data-bind="coins">0</b></p>
+          <button class="btn btn-primary btn-wide" data-action="restart">
+            <svg viewBox="0 0 24 24" width="20" height="20"><path fill="currentColor" d="M17.65 6.35A7.96 7.96 0 0 0 12 4a8 8 0 1 0 7.74 10h-2.08A6 6 0 1 1 12 6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>
+            PLAY AGAIN
+          </button>
+          <div class="menu-row">
+            <button class="btn btn-glass" data-action="garage">GARAGE</button>
+            <button class="btn btn-glass" data-action="menu">MENU</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Floating messages -->
+      <div id="toasts"></div>
+      <div id="big-text"></div>
+    </div>
+
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
+
